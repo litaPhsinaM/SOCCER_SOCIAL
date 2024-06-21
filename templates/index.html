@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Matches</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='98.css') }}">
+    <style>
+        body {
+            display: flex;
+            transition: margin-left 0.5s;
+        }
+
+        .container {
+            width: 80%;
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            transition: margin-left 0.5s;
+        }
+
+        .box {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 2px solid #000;
+            background-color: #c0c0c0;
+            flex: 1 1 100%;
+            overflow: hidden;
+            height: 300px; /* Adjusted height */
+        }
+
+        .scroll-box {
+            max-height: 225px; /* Adjusted height */
+            overflow-y: auto;
+        }
+
+        .chat-box,
+        .predictions-box {
+            display: none;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 70%;
+            border: 2px solid #000;
+            background-color: #c0c0c0;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .chat-header,
+        .predictions-header {
+            background-color: #000080;
+            color: #fff;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        .chat-body,
+        .predictions-body {
+            height: calc(100% - 110px);
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #fff;
+            border-bottom: 2px solid #000;
+        }
+
+        .chat-footer {
+            padding: 10px;
+            background-color: #c0c0c0;
+            border-top: 2px solid #000;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #000;
+            background-color: #e0e0e0;
+        }
+
+        .message strong {
+            display: block;
+        }
+
+        .message em {
+            font-size: 0.8em;
+            color: #808080;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #c0c0c0;
+        }
+
+        td:last-child {
+            text-align: right;
+        }
+
+        .form-submit {
+            display: flex;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .submit-button {
+            background-color: hsl(193, 13%, 78%);
+            color: #fff;
+            border: 1px solid #000;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .sidebar {
+            width: 0;
+            height: 100%;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #c0c0c0;
+            overflow-x: hidden;
+            transition: width 0.5s;
+            padding-top: 60px;
+            border-right: 2px solid #000;
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #000;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+
+        .sidebar .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+        }
+
+        .sidebar img {
+            display: block;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+
+        #sidebarBtn {
+            font-size: 30px;
+            cursor: pointer;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1;
+        }
+
+        #loadingScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+        }
+
+        #loadingGif {
+            width: 500px;
+            height: 350px;
+        }
+
+        .team-button {
+            background-color: #d5d5d5;
+            color: #010101;
+            border: 1px solid #000;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin: 2px;
+            display: inline-block;
+        }
+
+        .welcome-message {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 2px solid #000;
+            background-color: #c0c0c0;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loadingScreen">
+        <img src="" alt="Loading..." id="loadingGif">
+    </div>
+    <div id="sidebarBtn" onclick="openNav()">☰</div>
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
+        <a href="{{ url_for('index', user_id=user.id) }}" onclick="showLoadingScreen()">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" width="100">
+        </a>
+        <a href="#" onclick="showSection('messenger')">Messenger</a>
+        <a href="#" onclick="showSection('predictions')">Predictions</a>
+        <a href="{{ url_for('logout') }}" onclick="clearBrowserData()">Logout</a>
+    </div>
+
+    <div class="container" id="mainContent" style="margin-left: 50px;">
+        <div class="welcome-message">
+            Hey {{ user.name }}! Welcome to your ultimate soccer hub! Dive into the action, make your predictions, and chat with fellow fans. Let the soccer fun begin!
+        </div>
+        <div id="upcomingMatches" class="window box">
+            <div class="title-bar" style="height: 30px;">
+                <div class="title-bar-text">Upcoming Matches</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Minimize"></button>
+                    <button aria-label="Maximize"></button>
+                    <button aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body" style="padding: 5px;">
+                <div class="scroll-box" style="height: calc(100% - 35px);">
+                    <table>
+                        <tr>
+                            <th>Home Team</th>
+                            <th>Away Team</th>
+                            <th>Date & Time</th>
+                        </tr>
+                        {% for match in upcoming_matches %}
+                        <tr>
+                            <td>
+                                <button class="team-button" data-match-id="{{ match['id'] }}" data-team-name="{{ match['homeTeam']['name'] }}" data-user-id="{{ user.id }}" data-user-name="{{ user.name }}">{{ match['homeTeam']['name'] }}</button>
+                            </td>
+                            <td>
+                                <button class="team-button" data-match-id="{{ match['id'] }}" data-team-name="{{ match['awayTeam']['name'] }}" data-user-id="{{ user.id }}" data-user-name="{{ user.name }}">{{ match['awayTeam']['name'] }}</button>
+                            </td>
+                            <td>{{ match['formatted_date'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="liveMatches" class="window box">
+            <div class="title-bar" style="height: 30px;">
+                <div class="title-bar-text">Matches which are already done:</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Minimize"></button>
+                    <button aria-label="Maximize"></button>
+                    <button aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body" style="padding: 5px;">
+                <div class="scroll-box" style="height: calc(100% - 35px);">
+                    <table>
+                        <tr>
+                            <th>Home Team</th>
+                            <th>Away Team</th>
+                            <th>Score</th>
+                            <th>Date & Time</th>
+                        </tr>
+                        {% for match in completed_matches %}
+                        <tr>
+                            <td>{{ match['teams']['home']['name'] }}</td>
+                            <td>{{ match['teams']['away']['name'] }}</td>
+                            <td>{{ match['goals']['home'] }} - {{ match['goals']['away'] }}</td>
+                            <td>{{ match['fixture']['formatted_date'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="messenger" class="chat-box">
+        <div class="title-bar">
+            <div class="title-bar-text">Messenger</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="chat-body">
+            {% for message in messages %}
+            <div class="message">
+                <strong>{{ message.user_name }}:</strong> {{ message.content }}
+                <em>{{ message.timestamp.strftime('%m/%d/%Y %I:%M %p') }}</em>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="chat-footer">
+            <form id="chatForm" method="POST" action="{{ url_for('messenger', user_id=user.id) }}">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.content(rows=2, cols=30) }}
+                </div>
+                <button type="submit" class="send-button">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="predictions" class="predictions-box">
+        <div class="title-bar">
+            <div class="title-bar-text">Predictions</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="predictions-body">
+            <h3>Predictions</h3>
+            <p>Let's see if your predictions win, or will you face the roast from your friends!</p>
+            <table>
+                <tr>
+                    <th>User</th>
+                    <th>Prediction</th>
+                </tr>
+                {% for prediction in predictions %}
+                <tr>
+                    <td>{{ prediction.user_name }}</td>
+                    <td>{{ prediction.team_name }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function openNav() {
+            document.getElementById("sidebar").style.width = "250px";
+            document.getElementById("mainContent").style.marginLeft = "300px";
+        }
+
+        function closeNav() {
+            document.getElementById("sidebar").style.width = "0";
+            document.getElementById("mainContent").style.marginLeft = "50px";
+        }
+
+        function showSection(sectionId) {
+            var sections = document.querySelectorAll(".chat-box, .predictions-box, .window");
+            sections.forEach(section => section.style.display = "none");
+
+            var sectionToShow = document.getElementById(sectionId);
+            if (sectionToShow) {
+                sectionToShow.style.display = "block";
+            }
+
+            closeNav();
+        }
+
+        function showLoadingScreen() {
+            var gifs = [
+                'soccer15.gif',
+                'soccer16.gif',
+                'soccer17.gif',
+                'soccer19.gif',
+                'soccer21.gif',
+                'soccer22.gif',
+                'soccer23.gif',
+                'soccer24.gif',
+                'soccer25.gif',
+                'soccer26.gif',
+                'soccer9.gif'
+            ];
+            var randomGif = gifs[Math.floor(Math.random() * gifs.length)];
+            document.getElementById('loadingGif').src = "{{ url_for('static', filename='') }}" + randomGif;
+            document.getElementById('loadingScreen').style.display = 'flex';
+        }
+
+        function hideLoadingScreen() {
+            document.getElementById("loadingScreen").style.display = "none";
+        }
+
+        function clearBrowserData() {
+            // Clear cookies
+            document.cookie.split(";").forEach((c) => {
+                document.cookie = c.trim().split("=")[0] + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            });
+            // Clear local storage
+            localStorage.clear();
+            // Clear session storage
+            sessionStorage.clear();
+            // Clear cache
+            if ('caches' in window) {
+                caches.keys().then(function(names) {
+                    for (let name of names) caches.delete(name);
+                });
+            }
+            // Redirect to logout
+            window.location.href = "{{ url_for('logout') }}";
+        }
+
+        window.addEventListener('load', function() {
+            showLoadingScreen();
+            hideLoadingScreen();
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            showLoadingScreen();
+        });
+
+        // AJAX for chat form submission
+        document.getElementById('chatForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            fetch(this.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        var chatBody = document.querySelector('.chat-body');
+                        var newMessage = document.createElement('div');
+                        newMessage.className = 'message';
+                        newMessage.innerHTML = `<strong>${data.user_name}:</strong> ${data.content} <em>${data.timestamp}</em>`;
+                        chatBody.appendChild(newMessage);
+                        this.reset();
+                        chatBody.scrollTop = chatBody.scrollHeight; // Scroll to bottom
+                    }
+                });
+        });
+
+        // AJAX for team prediction
+        document.querySelectorAll('.team-button').forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                showLoadingScreen();
+                var matchId = this.getAttribute('data-match-id');
+                var teamName = this.getAttribute('data-team-name');
+                var userId = this.getAttribute('data-user-id');
+                var userName = this.getAttribute('data-user-name');
+
+                fetch('{{ url_for("predict") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        'user_id': userId,
+                        'match_id': matchId,
+                        'team_name': teamName,
+                        'user_name': userName
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            var predictionTable = document.querySelector('#predictions tbody');
+                            var newPrediction = document.createElement('tr');
+                            newPrediction.innerHTML = `<td>${data.user_name}</td><td>${data.team_name}</td>`;
+                            predictionTable.appendChild(newPrediction);
+                        }
+                        hideLoadingScreen();
+                    });
+            });
+        });
+    </script>
+</body>
+
+</html>

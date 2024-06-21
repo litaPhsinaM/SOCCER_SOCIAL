@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='98.css') }}">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+        }
+        .sidebar-container {
+            display: flex;
+            align-items: flex-start;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #c0c0c0;
+            border-right: 2px solid #000;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 10px;
+        }
+        .sidebar a {
+            display: block;
+            color: #000;
+            padding: 10px;
+            text-decoration: none;
+            border-bottom: 1px solid #000;
+            text-align: center;
+        }
+        .sidebar a:hover {
+            background-color: #808080;
+        }
+        .main-content {
+            margin-left: 220px; /* Adjust based on sidebar width */
+            padding: 20px;
+            width: calc(100% - 220px); /* Adjust based on sidebar width */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .main-content table {
+            width: 80%;
+            margin: auto;
+        }
+        .message {
+            text-align: center;
+            color: #000080;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar-container">
+        <div class="sidebar">
+            <a href="{{ url_for('index', user_id=user.id) }}">
+                <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width: 100%; height: auto;">
+            </a>
+            <a href="#" onclick="showSection('prediction')">Prediction</a>
+            <a href="#" onclick="showSection('messenger')">Messenger</a>
+        </div>
+        <div class="main-content">
+            <div id="prediction" style="display: none;">
+                <h3>Predictions</h3>
+                <p class="message">Let's see if your predictions win!</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Match ID</th>
+                            <th>Team Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prediction in predictions %}
+                        <tr>
+                            <td>{{ prediction.user_name }}</td>
+                            <td>{{ prediction.match_id }}</td>
+                            <td>{{ prediction.team_name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div id="messenger" style="display: none;">
+                {% include 'chat.html' %}
+            </div>
+        </div>
+    </div>
+    <script>
+        function showSection(sectionId) {
+            document.getElementById('prediction').style.display = 'none';
+            document.getElementById('messenger').style.display = 'none';
+            document.getElementById(sectionId).style.display = 'block';
+        }
+    </script>
+</body>
+</html>

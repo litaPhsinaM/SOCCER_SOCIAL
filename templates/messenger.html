@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messenger</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='98.css') }}">
+    <style>
+        .chat-box {
+            width: 60%;
+            height: 70%;
+            border: 2px solid #000;
+            background-color: #c0c0c0;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .chat-header {
+            background-color: #000080;
+            color: #fff;
+            padding: 10px;
+            font-weight: bold;
+        }
+        .chat-body {
+            height: calc(100% - 110px);
+            overflow-y: scroll;
+            padding: 10px;
+            background-color: #fff;
+            border-bottom: 2px solid #000;
+        }
+        .chat-footer {
+            padding: 10px;
+            background-color: #c0c0c0;
+            border-top: 2px solid #000;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 5px;
+            border: 1px solid #000;
+            background-color: #e0e0e0;
+        }
+        .message strong {
+            display: block;
+        }
+        .message em {
+            font-size: 0.8em;
+            color: #808080;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .send-button {
+            background-color: #008000;
+            color: #fff;
+            border: 1px solid #000;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-box">
+        <div class="title-bar">
+            <div class="title-bar-text">Messenger</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="chat-body">
+            {% for message in messages %}
+            <div class="message">
+                <strong>{{ message.user_name }}:</strong> {{ message.content }}
+                <em>{{ message.timestamp.strftime('%m/%d/%Y %I:%M %p') }}</em>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="chat-footer">
+            <form id="chatForm" method="POST" action="{{ url_for('messenger', user_id=user.id) }}">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.content(rows=2, cols=30) }}
+                </div>
+                <button type="submit" class="send-button">Send</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
