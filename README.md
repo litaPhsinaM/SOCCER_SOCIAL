@@ -96,7 +96,7 @@ Enjoy predicting and chatting about your favorite football matches with friends!
 
 ## 🎥 Demo
 
-![SOCcer + socIAL = SOCIAL](static/app.gif)
+![SOCcer + socIAL = SOCIAL](static/app2.gif)
 
 ---
 
