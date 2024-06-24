@@ -12,6 +12,7 @@ Welcome to **SOCcer + socIAL = SOCIAL**! This is a football prediction and chat 
 - **Add Friends**: Add friends to compete with them in predictions.
 - **Points and Leaderboard**: Earn points for correct predictions and compete on the leaderboard.
 - **Roast and Compete**: Use the chat to roast, compete, and have fun with your friends.
+- **Football Wall**: Post the latest updates and media about football.
 
 ## 🛠 Technologies Used
 
@@ -54,12 +55,21 @@ Welcome to **SOCcer + socIAL = SOCIAL**! This is a football prediction and chat 
     pip install -r requirements.txt
     ```
 
-4. **Run the application**:
+4. **Set up environment variables**:
+    Create a `.env` file in the root directory of the project and add the following lines:
+    ```sh
+    API_FOOTBALL_KEY=your_api_football_key
+    FOOTBALL_DATA_API_KEY=your_football_data_api_key
+    ```
+
+    Replace `your_api_football_key` and `your_football_data_api_key` with your actual API keys.
+
+5. **Run the application**:
     ```sh
     python app.py
     ```
 
-5. **Access the application**:
+6. **Access the application**:
     Open your browser and go to `http://127.0.0.1:5000`.
 
 ## 📋 How to Run the App on Your Device
@@ -68,8 +78,9 @@ Welcome to **SOCcer + socIAL = SOCIAL**! This is a football prediction and chat 
 2. Navigate to the project directory.
 3. Set up a virtual environment and activate it.
 4. Install the necessary dependencies listed in `requirements.txt`.
-5. Run `app.py` to start the application.
-6. Open your web browser and navigate to `http://127.0.0.1:5000`.
+5. Create a `.env` file and add your API keys.
+6. Run `app.py` to start the application.
+7. Open your web browser and navigate to `http://127.0.0.1:5000`.
 
 ## 📈 Future Enhancements
 
@@ -107,3 +118,7 @@ Add friends to compete with them in predictions, earn points for correct predict
 ---
 
 Stay tuned for more exciting features! 🚀
+
+---
+
+This project uses two different APIs to fetch live and upcoming match data. Be sure to add your own API keys to the `.env` file to get it working.
