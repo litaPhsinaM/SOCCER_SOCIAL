@@ -7,6 +7,11 @@ import requests
 from datetime import datetime, timedelta
 import pytz
 from dateutil import parser
+from dotenv import load_dotenv
+import os
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///predictions.db'
@@ -14,9 +19,10 @@ app.config['SECRET_KEY'] = 'your_secret_key'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-API_FOOTBALL_KEY = "440330aef1mshdc513253189692ap19c806jsn7d8ebad1b0c1"
+# Load API keys from environment variables
 API_FOOTBALL_HOST = "api-football-v1.p.rapidapi.com"
-FOOTBALL_DATA_API_KEY = "e429b666c9444e5b96ecb4314fac67c6"
+API_FOOTBALL_KEY = os.getenv("API_FOOTBALL_KEY")
+FOOTBALL_DATA_API_KEY = os.getenv("FOOTBALL_DATA_API_KEY")
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -60,9 +66,13 @@ def fetch_completed_matches():
     }
     response = requests.get(url, headers=headers, params=querystring)
     data = response.json()
-    for match in data['response']:
-        match['fixture']['formatted_date'] = format_date(match['fixture']['date'])
-    return data['response']
+    if 'response' in data:
+        for match in data['response']:
+            match['fixture']['formatted_date'] = format_date(match['fixture']['date'])
+        return data['response']
+    else:
+        print("Error fetching completed matches:", data)
+        return []
 
 def fetch_upcoming_matches():
     today = datetime.utcnow().date()
@@ -77,9 +87,13 @@ def fetch_upcoming_matches():
     }
     response = requests.get(url, headers=headers, params=params)
     data = response.json()
-    for match in data.get('matches', []):
-        match['formatted_date'] = format_date(match['utcDate'])
-    return data.get('matches', [])
+    if 'matches' in data:
+        for match in data['matches']:
+            match['formatted_date'] = format_date(match['utcDate'])
+        return data['matches']
+    else:
+        print("Error fetching upcoming matches:", data)
+        return []
 
 def format_date(date_str):
     utc_dt = parser.parse(date_str)
