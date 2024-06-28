@@ -4,7 +4,7 @@ Welcome to **SOCcer + socIAL = SOCIAL**! This is a football prediction and chat 
 
 ## 🌟 Features
 
-- **Live Football Matches**: View live scores and updates of ongoing football matches.
+- **Live Football Matches**: View live scores and updates of ongoing football matches
 - **Upcoming Matches**: Check out the schedule for upcoming matches and make predictions.
 - **Predictions**: Submit and view your predictions.
 - **Real-time Chat**: Chat with friends in real-time.
