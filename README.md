@@ -41,7 +41,7 @@ Welcome to **SOCcer + socIAL = SOCIAL**! This is a football prediction and chat 
 1. **Clone the repository**:
     ```sh
     git clone https://github.com/litaPhsinaM/SOCCER_SOCIAL.git
-    cd SOCcersocIAL-SOCIAL
+    cd SOCCER_SOCIAL
     ```
 
 2. **Create a virtual environment**:
